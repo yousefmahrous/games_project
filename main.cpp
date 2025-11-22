@@ -7,12 +7,15 @@
 #include "BoardGame_Classes.h"
 #include "misere.h"
 #include "fourinfour.h"
+#include "fourinfour.h"
+#include "NumericalTTT.h"
 
 using namespace std;
 
 void games() {
     cout << "1. Misere Tic Tac Toe" << endl;
     cout << "2. 4 x 4 Tic-Tac-Toe" << endl;
+    cout << "3. 3 x 3 Numerical Tic-Tac-Toe" << endl;
     cout << "0. Exit" << endl;
 }
 
@@ -61,6 +64,28 @@ void game_torun() {
             delete players[i];
         }
         delete[] players;
+
+    }else if (choice == '3') {
+     srand(static_cast<unsigned int>(time(nullptr)));
+
+     NumericalTTT_UI* game_ui = new NumericalTTT_UI();
+     NumericalTTT_Board* num_board = new NumericalTTT_Board(3, 3);
+
+     Player<int>** players = game_ui->setup_players();
+
+
+     players[0]->set_board_ptr(num_board);
+     players[1]->set_board_ptr(num_board);
+
+     GameManager<int> game(num_board, players, game_ui);
+     game.run();
+
+   
+     delete num_board;
+     delete players[0];
+     delete players[1];
+     delete[] players;
+     delete game_ui;
     }
 }
 
