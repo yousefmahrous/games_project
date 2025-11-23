@@ -7,8 +7,8 @@
 #include "BoardGame_Classes.h"
 #include "misere.h"
 #include "fourinfour.h"
-#include "fourinfour.h"
 #include "NumericalTTT.h"
+#include "obstacles.h"
 
 using namespace std;
 
@@ -16,6 +16,7 @@ void games() {
     cout << "1. Misere Tic Tac Toe" << endl;
     cout << "2. 4 x 4 Tic-Tac-Toe" << endl;
     cout << "3. 3 x 3 Numerical Tic-Tac-Toe" << endl;
+    cout << "4. Obstacles Tic-Tac-Toe" << endl;
     cout << "0. Exit" << endl;
 }
 
@@ -86,6 +87,26 @@ void game_torun() {
      delete players[1];
      delete[] players;
      delete game_ui;
+    }
+    else if (choice == '4') {
+        srand(static_cast<unsigned int>(time(0)));
+
+        UI<char>* game_ui = new obstacles_UI();
+
+        Board<char>* obstacles_board = new obstacles_Board();
+
+        Player<char>** players = game_ui->setup_players();
+
+        GameManager<char> obstacles_game(obstacles_board, players, game_ui);
+
+        obstacles_game.run();
+
+        delete obstacles_board;
+
+        for (int i = 0; i < 2; ++i) {
+            delete players[i];
+        }
+        delete[] players;
     }
 }
 
