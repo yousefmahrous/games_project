@@ -111,7 +111,7 @@ void game_torun() {
 }
 
 int main() {
-    cout << "Hello in FCAI games!" << endl;
+    cout << "Hello in EL Masateel games!" << endl;
     cout << "Please choose the game to run : " << endl;
     while (true) {
         games();
