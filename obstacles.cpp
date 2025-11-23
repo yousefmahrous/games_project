@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <iomanip>
 #include <cctype>
 #include <cstdlib>
@@ -11,7 +11,7 @@ using namespace std;
 obstacles_Board::obstacles_Board() : Board(6, 6) {
     // Initialize all cells
     for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < rows; j++) {
+        for (int j = 0; j < columns; j++) {
             board[i][j] = blank_symbol;
         }
     }
