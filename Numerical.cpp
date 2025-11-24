@@ -1,6 +1,4 @@
 #include <iostream>
-#include <iomanip>
-#include <cctype>
 #include <vector>
 #include <cstdlib>
 #include "NumericalTTT.h"
@@ -52,12 +50,42 @@ bool NumericalTTT_Board::update_board(Move<int>* move) {
     int y = move->get_y();
     int num = move->get_symbol();
 
-    if (x < 0 || x >= 3 || y < 0 || y >= 3) return false;
-    if (board[x][y] != 0) return false;
-    if (num < 1 || num > 9 || used[num]) return false;
+    bool odd_player = (n_moves % 2 == 0);
+    bool error = false;
+    string errors = "HAS ERROR! please fix the following\n";
+    
+    if ((odd_player && num % 2 == 0) || (!odd_player && num % 2 == 1)) {
+        if (odd_player)
+            errors += "Error: Player 1 can only play ODD numbers (1,3,5,7,9)\n";
+        else
+            errors += "Error: Player 2 can only play EVEN numbers (2,4,6,8)\n";
+        error = true;
+    }
+    if (num < 1 || num > 9) {
+        errors += "Invalid number : You must enter a number between 1 and 9.\n";
+        error = true;
+    }
+    if (used[num]) {
+        errors += "Error: Number " + to_string(num) + " has already been played!\n";
+        errors += "Choose a number that hasn't been used yet.\n";
+        error = true;
+    }
+    if (x < 0 || x >= 3 || y < 0 || y >= 3) {
+        errors += "Invalid Position : Row and column must be between 0 and 2.\n";
+        error = true;
+    }
+    if (board[x][y] != 0) { 
+        errors += "Invalid cell :The cell is already taken!\n";
+        error = true;
+    }
+ 
+   
 
-    bool odd_player = (n_moves % 2 == 0);  
-    if ((odd_player && num % 2 == 0) || (!odd_player && num % 2 == 1)) return false;
+    
+
+    if (error) {
+        cout << errors << endl;
+        return false; }
 
     board[x][y] = num;
     used[num] = true;
@@ -102,7 +130,7 @@ Move<int>* NumericalTTT_UI::get_move(Player<int>* player) {
     int x, y, num;
     int moves_count = 0; 
 
-   
+    cout << "\n   0   1   2\n\n";
     for (int i = 0; i < 3; i++)
         for (int j = 0; j < 3; j++)
             if (matrix[i][j] != 0)
