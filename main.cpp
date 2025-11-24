@@ -5,10 +5,12 @@
 #include <cstdlib>
 
 #include "BoardGame_Classes.h"
+
 #include "misere.h"
 #include "fourinfour.h"
 #include "NumericalTTT.h"
 #include "obstacles.h"
+#include "infinit.h"
 
 using namespace std;
 
@@ -17,6 +19,7 @@ void games() {
     cout << "2. 4 x 4 Tic-Tac-Toe" << endl;
     cout << "3. 3 x 3 Numerical Tic-Tac-Toe" << endl;
     cout << "4. Obstacles Tic-Tac-Toe" << endl;
+    cout << "5. Infinit Tic-Tac-Toe" << endl;
     cout << "0. Exit" << endl;
 }
 
@@ -102,6 +105,26 @@ void game_torun() {
         obstacles_game.run();
 
         delete obstacles_board;
+
+        for (int i = 0; i < 2; ++i) {
+            delete players[i];
+        }
+        delete[] players;
+    }
+    else if (choice == '5') {
+        srand(static_cast<unsigned int>(time(0)));
+
+        UI<char>* game_ui = new infinit_UI();
+
+        Board<char>* infinit_board = new infinit_Board();
+
+        Player<char>** players = game_ui->setup_players();
+
+        GameManager<char> fourinfour_game(infinit_board, players, game_ui);
+
+        fourinfour_game.run();
+
+        delete infinit_board;
 
         for (int i = 0; i < 2; ++i) {
             delete players[i];
