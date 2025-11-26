@@ -12,6 +12,7 @@
 #include "obstacles.h"
 #include "infinit.h"
 #include "fivexfive.h"
+#include "SUS.h"
 
 using namespace std;
 
@@ -22,6 +23,7 @@ void games() {
     cout << "4. Obstacles Tic-Tac-Toe" << endl;
     cout << "5. Infinit Tic-Tac-Toe" << endl;
     cout << "6. 5 x 5 Tic-Tac-Toe" << endl;
+    cout << "7. SUS Tic-Tac-Toe" << endl;
     cout << "0. Exit" << endl;
 }
 
@@ -175,7 +177,25 @@ void game_torun() {
             delete[] players;
             delete game_ui;
         }
+     }
+    else if (choice == '7') {
+        srand(static_cast<unsigned int>(time(0)));
+
+        UI<char>* game_ui = new SUS_UI();
+        Board<char>* sus_board = new SUS_Board();
+        Player<char>** players = game_ui->setup_players();
+
+        GameManager<char> sus_game(sus_board, players, game_ui);
+        sus_game.run();
+
+        // Cleanup
+        delete sus_board;
+        delete game_ui;
+        for (int i = 0; i < 2; ++i) {
+            delete players[i];
         }
+        delete[] players;
+     }
 }
 
 int main() {
