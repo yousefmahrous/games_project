@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <string>
 #include <vector>
 #include <memory>
@@ -11,6 +11,7 @@
 #include "NumericalTTT.h"
 #include "obstacles.h"
 #include "infinit.h"
+#include "fivexfive.h"
 
 using namespace std;
 
@@ -20,6 +21,7 @@ void games() {
     cout << "3. 3 x 3 Numerical Tic-Tac-Toe" << endl;
     cout << "4. Obstacles Tic-Tac-Toe" << endl;
     cout << "5. Infinit Tic-Tac-Toe" << endl;
+    cout << "6. 5 x 5 Tic-Tac-Toe" << endl;
     cout << "0. Exit" << endl;
 }
 
@@ -69,27 +71,28 @@ void game_torun() {
         }
         delete[] players;
 
-    }else if (choice == '3') {
-     srand(static_cast<unsigned int>(time(nullptr)));
+    }
+    else if (choice == '3') {
+        srand(static_cast<unsigned int>(time(nullptr)));
 
-     NumericalTTT_UI* game_ui = new NumericalTTT_UI();
-     NumericalTTT_Board* num_board = new NumericalTTT_Board(3, 3);
+        NumericalTTT_UI* game_ui = new NumericalTTT_UI();
+        NumericalTTT_Board* num_board = new NumericalTTT_Board(3, 3);
 
-     Player<int>** players = game_ui->setup_players();
+        Player<int>** players = game_ui->setup_players();
 
 
-     players[0]->set_board_ptr(num_board);
-     players[1]->set_board_ptr(num_board);
+        players[0]->set_board_ptr(num_board);
+        players[1]->set_board_ptr(num_board);
 
-     GameManager<int> game(num_board, players, game_ui);
-     game.run();
+        GameManager<int> game(num_board, players, game_ui);
+        game.run();
 
-   
-     delete num_board;
-     delete players[0];
-     delete players[1];
-     delete[] players;
-     delete game_ui;
+
+        delete num_board;
+        delete players[0];
+        delete players[1];
+        delete[] players;
+        delete game_ui;
     }
     else if (choice == '4') {
         srand(static_cast<unsigned int>(time(0)));
@@ -131,6 +134,48 @@ void game_torun() {
         }
         delete[] players;
     }
+    else if (choice == '6') {
+        while (true) {
+            srand(time(0));
+
+            auto* game_ui = new fivexfive_UI();
+            auto* fivexfive_board = new fivexfive_Board();
+            auto** players = game_ui->setup_players();
+
+            GameManager<char> game(fivexfive_board, players, game_ui);
+            game.run();
+
+            int score_X = fivexfive_board->get_score('X');
+            int score_O = fivexfive_board->get_score('O');
+
+            cout << "Player X : " << score_X << endl;
+            cout << "Player O : " << score_O << endl;
+
+            if (score_X == score_O) {
+                cout << "Draw!" << endl;
+            }
+            else if (score_X > score_O) {
+                cout << "Player X wins" << endl;
+                delete fivexfive_board;
+                for (int i = 0; i < 2; ++i) delete players[i];
+                delete[] players;
+                delete game_ui;
+                break;
+            }
+            else {
+                cout << "Player O wins" << endl;
+                delete fivexfive_board;
+                for (int i = 0; i < 2; ++i) delete players[i];
+                delete[] players;
+                delete game_ui;
+                break;
+            }
+            delete fivexfive_board;
+            for (int i = 0; i < 2; ++i) delete players[i];
+            delete[] players;
+            delete game_ui;
+        }
+        }
 }
 
 int main() {
