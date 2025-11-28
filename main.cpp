@@ -13,6 +13,7 @@
 #include "infinit.h"
 #include "fivexfive.h"
 #include "SUS.h"
+#include "pyramid.h"
 
 using namespace std;
 
@@ -24,6 +25,7 @@ void games() {
     cout << "5. Infinit Tic-Tac-Toe" << endl;
     cout << "6. 5 x 5 Tic-Tac-Toe" << endl;
     cout << "7. SUS Tic-Tac-Toe" << endl;
+    cout << "8. Pyramid Tic-Tac-Toe" << endl;
     cout << "0. Exit" << endl;
 }
 
@@ -195,6 +197,23 @@ void game_torun() {
             delete players[i];
         }
         delete[] players;
+     } else if (choice == '8') {
+         srand(static_cast<unsigned int>(time(0)));
+
+         UI<char>* game_ui = new pyramid_UI();
+         Board<char>* pyramid_board = new pyramid_Board();
+         Player<char>** players = game_ui->setup_players();
+
+         GameManager<char> pyramid_game(pyramid_board, players, game_ui);
+         pyramid_game.run();
+
+         // Cleanup
+         delete pyramid_board;
+         delete game_ui;
+         for (int i = 0; i < 2; ++i) {
+             delete players[i];
+         }
+         delete[] players;
      }
 }
 
