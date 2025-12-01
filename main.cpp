@@ -14,6 +14,7 @@
 #include "fivexfive.h"
 #include "SUS.h"
 #include "pyramid.h"
+#include "ultimate.h"
 
 using namespace std;
 
@@ -26,6 +27,7 @@ void games() {
     cout << "6. 5 x 5 Tic-Tac-Toe" << endl;
     cout << "7. SUS Tic-Tac-Toe" << endl;
     cout << "8. Pyramid Tic-Tac-Toe" << endl;
+    cout << "9. Ultimate Tic Tac Toe" << endl;
     cout << "0. Exit" << endl;
 }
 
@@ -179,7 +181,7 @@ void game_torun() {
             delete[] players;
             delete game_ui;
         }
-     }
+    }
     else if (choice == '7') {
         srand(static_cast<unsigned int>(time(0)));
 
@@ -197,24 +199,42 @@ void game_torun() {
             delete players[i];
         }
         delete[] players;
-     } else if (choice == '8') {
-         srand(static_cast<unsigned int>(time(0)));
+    }
+    else if (choice == '8') {
+        srand(static_cast<unsigned int>(time(0)));
 
-         UI<char>* game_ui = new pyramid_UI();
-         Board<char>* pyramid_board = new pyramid_Board();
-         Player<char>** players = game_ui->setup_players();
+        UI<char>* game_ui = new pyramid_UI();
+        Board<char>* pyramid_board = new pyramid_Board();
+        Player<char>** players = game_ui->setup_players();
 
-         GameManager<char> pyramid_game(pyramid_board, players, game_ui);
-         pyramid_game.run();
+        GameManager<char> pyramid_game(pyramid_board, players, game_ui);
+        pyramid_game.run();
 
-         // Cleanup
-         delete pyramid_board;
-         delete game_ui;
-         for (int i = 0; i < 2; ++i) {
-             delete players[i];
-         }
-         delete[] players;
-     }
+        // Cleanup
+        delete pyramid_board;
+        delete game_ui;
+        for (int i = 0; i < 2; ++i) {
+            delete players[i];
+        }
+        delete[] players;
+    }
+    else if (choice == '9') {
+            srand(static_cast<unsigned int>(time(0)));
+
+            UI<char>* game_ui = new ultimate_UI();
+            Board<char>* ultimate_board = new ultimate_Board();
+            Player<char>** players = game_ui->setup_players();
+
+            GameManager<char> ultimate_game(ultimate_board, players, game_ui);
+            ultimate_game.run();
+
+            delete ultimate_board;
+            for (int i = 0; i < 2; ++i) {
+                delete players[i];
+            }
+            delete[] players;
+            delete game_ui;
+        }
 }
 
 int main() {
