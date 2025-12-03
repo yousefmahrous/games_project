@@ -15,7 +15,7 @@
 #include "SUS.h"
 #include "pyramid.h"
 #include "ultimate.h"
-//#include "Diamond.h"
+#include "Diamond.h"
 
 using namespace std;
 
@@ -29,7 +29,7 @@ void games() {
     cout << "7. SUS Tic-Tac-Toe" << endl;
     cout << "8. Pyramid Tic-Tac-Toe" << endl;
     cout << "9. Ultimate Tic Tac Toe" << endl;
-    //cout << "10. Diamond Tic-Tac-Toe" << endl;
+    cout << "10. Diamond Tic-Tac-Toe" << endl;
     cout << "0. Exit" << endl;
 }
 
@@ -239,25 +239,25 @@ void game_torun() {
     }
     else if (choice == 10) {
 
-        //srand(static_cast<unsigned int>(time(0)));
+        srand(static_cast<unsigned int>(time(0)));
 
-        //UI<char>* game_ui = new Diamond_UI();
+        UI<char>* game_ui = new Diamond_UI();
 
-        //Board<char>* diamond_board = new Diamond_Board();
+        Board<char>* diamond_board = new Diamond_Board();
 
-        //Player<char>** players = game_ui->setup_players();
+        Player<char>** players = game_ui->setup_players();
 
-        //GameManager<char> diamond_game(diamond_board, players, game_ui);
+        GameManager<char> diamond_game(diamond_board, players, game_ui);
 
-        //diamond_game.run();
+        diamond_game.run();
 
-        //delete diamond_board;
-        //delete game_ui;
+        delete diamond_board;
+        delete game_ui;
 
-        //for (int i = 0; i < 2; ++i) {
-        //    delete players[i];
-        //}
-        //delete[] players;
+        for (int i = 0; i < 2; ++i) {
+            delete players[i];
+        }
+        delete[] players;
     }
 }
 
