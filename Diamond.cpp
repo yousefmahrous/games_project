@@ -155,7 +155,7 @@ Move<char>* Diamond_UI::get_move(Player<char>* player) {
     Board<char>* b = player->get_board_ptr();
 
     if (player->get_type() == PlayerType::HUMAN) {
-        cout << player->get_name() << " (" << player->get_symbol() << ") → cell (1-25): ";
+        cout << player->get_name() << " (" << player->get_symbol() << ")  cell (1-25): ";
         cin >> num;
         while (num < 1 || num > 25 ||
             b->get_cell(cells[num - 1].first, cells[num - 1].second) != blank_symbol) {
