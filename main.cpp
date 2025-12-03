@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <string>
 #include <vector>
 #include <memory>
@@ -15,6 +15,7 @@
 #include "SUS.h"
 #include "pyramid.h"
 #include "ultimate.h"
+#include "Diamond.h"
 
 using namespace std;
 
@@ -28,16 +29,17 @@ void games() {
     cout << "7. SUS Tic-Tac-Toe" << endl;
     cout << "8. Pyramid Tic-Tac-Toe" << endl;
     cout << "9. Ultimate Tic Tac Toe" << endl;
+    cout << "10. Diamond Tic-Tac-Toe" << endl;
     cout << "0. Exit" << endl;
 }
 
 void game_torun() {
-    char choice;
+    int choice;
     cin >> choice;
-    if (choice == '0') {
+    if (choice == 0) {
         exit(0);
     }
-    else if (choice == '1') {
+    else if (choice == 1) {
         srand(static_cast<unsigned int>(time(0)));
 
         UI<char>* game_ui = new misere_UI();
@@ -57,7 +59,7 @@ void game_torun() {
         }
         delete[] players;
     }
-    else if (choice == '2') {
+    else if (choice == 2) {
         srand(static_cast<unsigned int>(time(0)));
 
         UI<char>* game_ui = new fourinfour_UI();
@@ -78,7 +80,7 @@ void game_torun() {
         delete[] players;
 
     }
-    else if (choice == '3') {
+    else if (choice == 3) {
         srand(static_cast<unsigned int>(time(nullptr)));
 
         NumericalTTT_UI* game_ui = new NumericalTTT_UI();
@@ -100,7 +102,7 @@ void game_torun() {
         delete[] players;
         delete game_ui;
     }
-    else if (choice == '4') {
+    else if (choice == 4) {
         srand(static_cast<unsigned int>(time(0)));
 
         UI<char>* game_ui = new obstacles_UI();
@@ -120,7 +122,7 @@ void game_torun() {
         }
         delete[] players;
     }
-    else if (choice == '5') {
+    else if (choice == 5) {
         srand(static_cast<unsigned int>(time(0)));
 
         UI<char>* game_ui = new infinit_UI();
@@ -140,7 +142,7 @@ void game_torun() {
         }
         delete[] players;
     }
-    else if (choice == '6') {
+    else if (choice == 6) {
         while (true) {
             srand(time(0));
 
@@ -182,7 +184,7 @@ void game_torun() {
             delete game_ui;
         }
     }
-    else if (choice == '7') {
+    else if (choice == 7) {
         srand(static_cast<unsigned int>(time(0)));
 
         UI<char>* game_ui = new SUS_UI();
@@ -200,7 +202,7 @@ void game_torun() {
         }
         delete[] players;
     }
-    else if (choice == '8') {
+    else if (choice == 8) {
         srand(static_cast<unsigned int>(time(0)));
 
         UI<char>* game_ui = new pyramid_UI();
@@ -218,23 +220,38 @@ void game_torun() {
         }
         delete[] players;
     }
-    else if (choice == '9') {
-            srand(static_cast<unsigned int>(time(0)));
+   else if (choice == 9) {
+        srand(static_cast<unsigned int>(time(0)));
 
-            UI<char>* game_ui = new ultimate_UI();
-            Board<char>* ultimate_board = new ultimate_Board();
-            Player<char>** players = game_ui->setup_players();
+        UI<char>* game_ui = new ultimate_UI();
+        Board<char>* ultimate_board = new ultimate_Board();
+        Player<char>** players = game_ui->setup_players();
 
-            GameManager<char> ultimate_game(ultimate_board, players, game_ui);
-            ultimate_game.run();
+        GameManager<char> ultimate_game(ultimate_board, players, game_ui);
+        ultimate_game.run();
 
-            delete ultimate_board;
-            for (int i = 0; i < 2; ++i) {
-                delete players[i];
-            }
-            delete[] players;
-            delete game_ui;
+        delete ultimate_board;
+        for (int i = 0; i < 2; ++i) {
+            delete players[i];
         }
+        delete[] players;
+        delete game_ui;
+    }
+    else if (choice == 10) {
+        UI<char>* game_ui = new Diamond_UI();
+        Board<char>* diamond_board = new Diamond_Board();
+
+        Player<char>** players = game_ui->setup_players();
+        GameManager<char> game(diamond_board, players, game_ui);
+        game.run();
+
+        delete diamond_board;
+        delete game_ui;
+        for (int i = 0; i < 2; ++i) {
+            delete players[i];
+        }
+        delete[] players;
+    }
 }
 
 int main() {
@@ -245,4 +262,5 @@ int main() {
         game_torun();
     }
     return 0;
+
 }
