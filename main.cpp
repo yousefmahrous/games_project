@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <string>
 #include <vector>
 #include <memory>
@@ -18,6 +18,7 @@
 #include "Diamond.h"
 #include "memory.h"
 #include "word.h"
+#include "Four-in-a-row.h"
 
 using namespace std;
 
@@ -34,6 +35,7 @@ void games() {
     cout << "10. Diamond Tic-Tac-Toe" << endl;
     cout << "11. Memory Tic-Tac-Toe" << endl;
     cout << "12. Word Tic-Tac-Toe" << endl;
+    cout << "13. Four-in-a-row Tic-Tac-Toe" << endl;
     cout << "0. Exit" << endl;
 }
 
@@ -285,27 +287,49 @@ void game_torun() {
             delete players[i];
         }
         delete[] players;
-        }
-    else if (choice == 12) {
-            srand(static_cast<unsigned int>(time(0)));
-
-            UI<char>* game_ui = new Word_UI();
-
-            Board<char>* word_board = new Word_Board();
-
-            Player<char>** players = game_ui->setup_players();
-
-            GameManager<char> word_game(word_board, players, game_ui);
-
-            word_game.run();
-
-            delete word_board;
-            delete game_ui;
-
-            for (int i = 0; i < 2; ++i) {
-                delete players[i];
-            }
     }
+    else if (choice == 12) {
+        srand(static_cast<unsigned int>(time(0)));
+
+        UI<char>* game_ui = new Word_UI();
+
+        Board<char>* word_board = new Word_Board();
+
+        Player<char>** players = game_ui->setup_players();
+
+        GameManager<char> word_game(word_board, players, game_ui);
+
+        word_game.run();
+
+        delete word_board;
+        delete game_ui;
+
+        for (int i = 0; i < 2; ++i) {
+            delete players[i];
+        }
+    }
+    else if (choice == 13) {
+
+        srand(static_cast<unsigned int>(time(0)));
+
+        UI<char>* game_ui = new Four_in_a_row_UI();
+
+        Board<char>* Four_in_a_row_board = new Four_in_a_row_Board();
+
+        Player<char>** players = game_ui->setup_players();
+
+        GameManager<char> Four_in_a_row_game(Four_in_a_row_board, players, game_ui);
+
+        Four_in_a_row_game.run();
+
+        delete Four_in_a_row_board;
+        delete game_ui;
+
+        for (int i = 0; i < 2; ++i) {
+            delete players[i];
+        }
+        delete[] players;
+        }
 }
 
 int main() {
