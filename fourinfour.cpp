@@ -1,8 +1,9 @@
-﻿﻿#include <iostream>
+#include <iostream>
 #include <iomanip>
 #include <cctype>
 #include <cstdlib>
 #include <ctime>
+#include <functional>
 #include "fourinfour.h"
 
 using namespace std;
@@ -141,120 +142,136 @@ Player<char>* fourinfour_UI::create_player(string& name, char symbol, PlayerType
 }
 
 Move<char>* fourinfour_UI::get_move(Player<char>* player) {
-    // Show whose turn it is
     cout << "=== " << player->get_name() << "'s turn (" << player->get_symbol() << ") ===" << endl;
-
-    // Show current board
     display_board_matrix(player->get_board_ptr()->get_board_matrix());
 
     if (player->get_type() == PlayerType::HUMAN) {
         int xold, yold;
         cout << player->get_name() << ", enter the position of your token to move: ";
         cin >> xold >> yold;
-
-        // Show what the human is doing
         cout << player->get_name() << " selected token at (" << xold << "," << yold << ")" << endl;
-
         return new Move<char>(xold, yold, player->get_symbol());
     }
     else if (player->get_type() == PlayerType::COMPUTER) {
-
         Board<char>* board_ptr = player->get_board_ptr();
         char symbol = player->get_symbol();
         vector<vector<char>> board_matrix = board_ptr->get_board_matrix();
         char opp_symbol = (symbol == 'X') ? 'O' : 'X';
 
-        // Helper lambda to check if player wins
         auto check_win = [](vector<vector<char>>& b, char sym) -> bool {
-            // Horizontal
             for (int i = 0; i < 4; i++) {
                 for (int j = 0; j < 2; j++) {
                     if (b[i][j] == sym && b[i][j + 1] == sym && b[i][j + 2] == sym) return true;
                 }
             }
-            // Vertical
             for (int i = 0; i < 2; i++) {
                 for (int j = 0; j < 4; j++) {
                     if (b[i][j] == sym && b[i + 1][j] == sym && b[i + 2][j] == sym) return true;
                 }
             }
-            // Diagonal \
             for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 2; j++) {
-                if (b[i][j] == sym && b[i + 1][j + 1] == sym && b[i + 2][j + 2] == sym) return true;
+                for (int j = 0; j < 2; j++) {
+                    if (b[i][j] == sym && b[i + 1][j + 1] == sym && b[i + 2][j + 2] == sym) return true;
+                }
             }
+            for (int i = 0; i < 2; i++) {
+                for (int j = 2; j < 4; j++) {
+                    if (b[i][j] == sym && b[i + 1][j - 1] == sym && b[i + 2][j - 2] == sym) return true;
+                }
             }
-            // Diagonal /
-        for (int i = 0; i < 2; i++) {
-            for (int j = 2; j < 4; j++) {
-                if (b[i][j] == sym && b[i + 1][j - 1] == sym && b[i + 2][j - 2] == sym) return true;
-            }
-        }
-        return false;
-    };
+            return false;
+            };
 
-    // Helper lambda to evaluate board
-    auto evaluate = [&](vector<vector<char>>& b) -> int {
-        if (check_win(b, symbol)) return 1000;      // Computer wins
-        if (check_win(b, opp_symbol)) return -1000; // Human wins
+        auto evaluate = [&](vector<vector<char>>& b) -> int {
+            if (check_win(b, symbol)) return 1000;
+            if (check_win(b, opp_symbol)) return -1000;
 
-        int score = 0;
-        // Count potential threats (2 in a row)
+            int score = 0;
+            for (int i = 0; i < 4; i++) {
+                for (int j = 0; j < 3; j++) {
+                    if (b[i][j] == symbol && b[i][j + 1] == symbol) score += 10;
+                    if (b[i][j] == opp_symbol && b[i][j + 1] == opp_symbol) score -= 15;
+                }
+            }
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 4; j++) {
+                    if (b[i][j] == symbol && b[i + 1][j] == symbol) score += 10;
+                    if (b[i][j] == opp_symbol && b[i + 1][j] == opp_symbol) score -= 15;
+                }
+            }
+            return score;
+            };
+
+        function<int(vector<vector<char>>&, int, bool)> minimax =
+            [&](vector<vector<char>>& b, int depth, bool is_maximizing) -> int {
+
+            if (check_win(b, symbol)) return 1000 - depth;
+            if (check_win(b, opp_symbol)) return -1000 + depth;
+            if (depth >= 3) return evaluate(b);
+
+            char current_player = is_maximizing ? symbol : opp_symbol;
+            int best_score = is_maximizing ? -9999 : 9999;
+
+            for (int i = 0; i < 4; i++) {
+                for (int j = 0; j < 4; j++) {
+                    if (b[i][j] == current_player) {
+                        int dirs[4][2] = { {-1,0}, {1,0}, {0,-1}, {0,1} };
+
+                        for (int d = 0; d < 4; d++) {
+                            int ni = i + dirs[d][0];
+                            int nj = j + dirs[d][1];
+
+                            if (ni >= 0 && ni < 4 && nj >= 0 && nj < 4 && b[ni][nj] == '.') {
+                                b[i][j] = '.';
+                                b[ni][nj] = current_player;
+
+                                int score = minimax(b, depth + 1, !is_maximizing);
+
+                                b[ni][nj] = '.';
+                                b[i][j] = current_player;
+
+                                if (is_maximizing) {
+                                    best_score = max(best_score, score);
+                                }
+                                else {
+                                    best_score = min(best_score, score);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return best_score;
+            };
+
+        int best_score = -9999;
+        int best_xold = -1, best_yold = -1, best_xnew = -1, best_ynew = -1;
+
         for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 3; j++) {
-                if (b[i][j] == symbol && b[i][j + 1] == symbol) score += 10;
-                if (b[i][j] == opp_symbol && b[i][j + 1] == opp_symbol) score -= 15;
-            }
-        }
-        for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 4; j++) {
-                if (b[i][j] == symbol && b[i + 1][j] == symbol) score += 10;
-                if (b[i][j] == opp_symbol && b[i + 1][j] == opp_symbol) score -= 15;
-            }
-        }
-        return score;
-        };
-
-    // Minimax with backtracking
-    function<int(vector<vector<char>>&, int, bool)> minimax =
-        [&](vector<vector<char>>& b, int depth, bool is_maximizing) -> int {
-
-        // Terminal conditions
-        if (check_win(b, symbol)) return 1000 - depth;
-        if (check_win(b, opp_symbol)) return -1000 + depth;
-        if (depth >= 3) return evaluate(b); // Depth limit for performance
-
-        char current_player = is_maximizing ? symbol : opp_symbol;
-        int best_score = is_maximizing ? -9999 : 9999;
-
-        // Try all possible moves
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
-                if (b[i][j] == current_player) {
+                if (board_matrix[i][j] == symbol) {
                     int dirs[4][2] = { {-1,0}, {1,0}, {0,-1}, {0,1} };
 
                     for (int d = 0; d < 4; d++) {
                         int ni = i + dirs[d][0];
                         int nj = j + dirs[d][1];
 
-                        if (ni >= 0 && ni < 4 && nj >= 0 && nj < 4 && b[ni][nj] == '.') {
-                            // Make move (backtracking step 1)
-                            b[i][j] = '.';
-                            b[ni][nj] = current_player;
+                        if (ni >= 0 && ni < 4 && nj >= 0 && nj < 4 && board_matrix[ni][nj] == '.') {
+                            board_matrix[i][j] = '.';
+                            board_matrix[ni][nj] = symbol;
 
-                            // Recursive call
-                            int score = minimax(b, depth + 1, !is_maximizing);
+                            int score = minimax(board_matrix, 0, false);
 
-                            // Undo move (backtracking step 2)
-                            b[ni][nj] = '.';
-                            b[i][j] = current_player;
+                            board_matrix[ni][nj] = '.';
+                            board_matrix[i][j] = symbol;
 
-                            // Update best score
-                            if (is_maximizing) {
-                                best_score = max(best_score, score);
-                            }
-                            else {
-                                best_score = min(best_score, score);
+                            if (score > best_score) {
+                                best_score = score;
+                                best_xold = i;
+                                best_yold = j;
+                                best_xnew = ni;
+                                best_ynew = nj;
                             }
                         }
                     }
@@ -262,71 +279,25 @@ Move<char>* fourinfour_UI::get_move(Player<char>* player) {
             }
         }
 
-        return best_score;
-        };
+        if (best_xold != -1) {
+            is_computer_move = true;
+            computer_xnew = best_xnew;
+            computer_ynew = best_ynew;
 
-    // Find best move for computer
-    int best_score = -9999;
-    int best_xold = -1, best_yold = -1, best_xnew = -1, best_ynew = -1;
+            cout << "Computer selected token at (" << best_xold << "," << best_yold << ")" << endl;
+            cout << "Computer moves to (" << best_xnew << "," << best_ynew << ")" << endl;
 
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            if (board_matrix[i][j] == symbol) {
-                int dirs[4][2] = { {-1,0}, {1,0}, {0,-1}, {0,1} };
+            return new Move<char>(best_xold, best_yold, symbol);
+        }
 
-                for (int d = 0; d < 4; d++) {
-                    int ni = i + dirs[d][0];
-                    int nj = j + dirs[d][1];
-
-                    if (ni >= 0 && ni < 4 && nj >= 0 && nj < 4 &&
-                        board_matrix[ni][nj] == '.') {
-
-                        // Try this move
-                        board_matrix[i][j] = '.';
-                        board_matrix[ni][nj] = symbol;
-
-                        // Evaluate using minimax
-                        int score = minimax(board_matrix, 0, false);
-
-                        // Undo move
-                        board_matrix[ni][nj] = '.';
-                        board_matrix[i][j] = symbol;
-
-                        // Update best
-                        if (score > best_score) {
-                            best_score = score;
-                            best_xold = i;
-                            best_yold = j;
-                            best_xnew = ni;
-                            best_ynew = nj;
-                        }
-                    }
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                if (board_matrix[i][j] == symbol) {
+                    return new Move<char>(i, j, symbol);
                 }
             }
         }
     }
 
-    // Make the best move
-    if (best_xold != -1) {
-        is_computer_move = true;
-        computer_xnew = best_xnew;
-        computer_ynew = best_ynew;
-
-        cout << "Computer selected token at (" << best_xold << "," << best_yold << ")" << endl;
-        cout << "Computer moves to (" << best_xnew << "," << best_ynew << ")" << endl;
-
-        return new Move<char>(best_xold, best_yold, symbol);
-    }
-
-    // Fallback
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            if (board_matrix[i][j] == symbol) {
-                return new Move<char>(i, j, symbol);
-            }
-        }
-    }
-}
-
-return nullptr;
+    return nullptr;
 }
