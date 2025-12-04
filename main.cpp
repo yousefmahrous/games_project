@@ -329,7 +329,7 @@ void game_torun() {
             delete players[i];
         }
         delete[] players;
-        }
+    }
 }
 
 int main() {
