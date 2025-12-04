@@ -183,7 +183,7 @@ Move<char>* Diamond_UI::get_move(Player<char>* player) {
             };
 
         //Check win condition on board
-        auto check_win_on_board = [&](vector<vector<char>>& brd, char sym) -> bool{
+        auto check_win_on_board = [&](vector<vector<char>>& brd, char sym) -> bool {
             struct Line {
                 vector<pair<int, int>> cells;
                 int direction;
