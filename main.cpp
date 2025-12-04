@@ -16,6 +16,7 @@
 #include "pyramid.h"
 #include "ultimate.h"
 #include "Diamond.h"
+#include "word.h"
 
 using namespace std;
 
@@ -30,6 +31,7 @@ void games() {
     cout << "8. Pyramid Tic-Tac-Toe" << endl;
     cout << "9. Ultimate Tic Tac Toe" << endl;
     cout << "10. Diamond Tic-Tac-Toe" << endl;
+    cout << "11. Word Tic-Tac-Toe" << endl;
     cout << "0. Exit" << endl;
 }
 
@@ -252,6 +254,27 @@ void game_torun() {
         diamond_game.run();
 
         delete diamond_board;
+        delete game_ui;
+
+        for (int i = 0; i < 2; ++i) {
+            delete players[i];
+        }
+        delete[] players;
+    }
+    else if (choice == 11) {
+        srand(static_cast<unsigned int>(time(0)));
+
+        UI<char>* game_ui = new Word_UI();
+
+        Board<char>* word_board = new Word_Board();
+
+        Player<char>** players = game_ui->setup_players();
+
+        GameManager<char> word_game(word_board, players, game_ui);
+
+        word_game.run();
+
+        delete word_board;
         delete game_ui;
 
         for (int i = 0; i < 2; ++i) {
